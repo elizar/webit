@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+'use strict';
+var http = require('http'),
+  fs = require('fs'),
+  path = require('path'),
+  url = require('url'),
+  colors = require('colors'),
+  optimist = require('optimist'),
+  argv = optimist
+         .usage('\nUsage: '+ process.argv[1].split('/').pop() + ' [options]')
+         .alias('p', 'port')
+         .describe('p', 'Port to bind the server to')
+         .default('p', 3000)
+         .alias('d', 'dir')
+         .describe('d', 'Path to your static files')
+         .default('d', process.cwd())
+         .boolean('h')
+         .alias('h', 'help')
+         .describe('h', 'Help ')
+         .argv,
+
+  mime = {
+    ".js"   : "text/javascript",
+    ".css"  : "text/css",
+    ".html" : "text/html",
+    ".json" : "application/json",
+    ".png"  : "image/png",
+    ".jpg"  : "image/jpeg",
+    ".gif"  : "image/gif"
+  },
+
+  routes = {
+    "/" : function(req, res) {
+      var _path = path.join(argv.d, 'index.html');
+      console.log(_path);
+      res.writeHead(200, {"Content-Type" : "text/html"});
+      var exists = fs.existsSync(_path);
+      if (exists) {
+        return fs.createReadStream(_path).pipe(res);
+      }
+      res.end('<h1>It worked!</h1>');
+    }
+  };
+
+  if (argv.h) {
+    console.log(optimist.help());
+    return;
+  }
+
+  var // server
+  server = http.createServer(function(req,res){
+    var _path = path.join(argv.d, req.url);
+    if (path.extname(_path) !== "") {
+      fs.exists(_path, function(exists) {
+        if (exists) {
+          res.writeHead(200, {"Content-Type" : mime[path.extname(_path)]});
+          fs.createReadStream(_path).pipe(res);
+        } else {
+          res.writeHead(404, {"Content-Type" : "text/html"});
+          res.end("<h1>Error 404: Not Found!</h1>");
+        }
+      });
+      return;
+    }
+    try {
+      return routes[req.url](req,res);
+    }
+    catch(e) {
+    // Do Nothing
+    }
+    // Render 404 page
+    console.log(req.url);
+    res.writeHead(404, {"Content-Type" : "text/html"});
+    res.end("<h1>Error 404: Not Found!</h1>");
+
+  });
+
+server.listen(argv.p);
+console.log('');
+console.log('  +---------------------+'.grey);
+console.log('  | HTTP Server Running |'.grey);
+console.log('  +---------------------+'.grey);
+console.log('');
+console.log('  Serving: %s', argv.d.blue);
+console.log('  --'.grey);
+console.log('  On Port: %s', argv.p.toString().blue);
+console.log('  --'.grey);
+console.log('  Visit : ' + 'http://localhost:%s/'.magenta.underline, argv.p.toString());
+console.log('');
+console.log('  ctrl+C to stop'.grey);

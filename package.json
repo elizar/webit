@@ -1,0 +1,32 @@
+{
+  "name": "webit",
+  "version": "0.0.1",
+  "description": "a simplistic http-server for serving static files",
+  "bin": {
+    "webit": "./bin/webit"
+  },
+  "dependencies": {
+    "colors": "~0.6.2",
+    "optimist": "~0.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/elizar/webit"
+  },
+  "keywords": [
+    "http",
+    "server",
+    "web",
+    "static",
+    "site"
+  ],
+  "author": "Elizar Pepino",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elizar/webit/issues"
+  }
+}
