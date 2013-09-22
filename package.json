@@ -1,6 +1,6 @@
 {
   "name": "webit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a simplistic http-server for serving static files",
   "bin": {
     "webit": "./bin/webit"
